@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cubeApp">
+	<head>
+		<title>three.js canvas - geometry - cube</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body ng-controller="cubeCtrl">
+
+		<input ng-model="xRotationSpeed" type="range" name="points" min="0" max="10"><br/>
+		<input ng-model="yRotationSpeed" type="range" min="0" max="10">
+		<script src="three.min.js"></script>
+		<script src="angular.min.js"></script>
+
+		<script>
+			var cubeApp = angular.module('cubeApp', []);
+
+			cubeApp.controller('cubeCtrl', function ($scope) {
+				$scope.xRotationSpeed = 5;
+				$scope.yRotationSpeed = 5;
+				var container, stats;
+
+				var camera, scene, renderer;
+
+				var cube;
+
+				var windowHalfX = window.innerWidth / 2;
+				var windowHalfY = window.innerHeight / 2;
+
+				init();
+				animate();
+
+				function init() {
+
+					container = document.createElement( 'div' );
+					document.body.appendChild( container );
+
+					camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+					camera.position.y = 150;
+					camera.position.z = 500;
+
+					scene = new THREE.Scene();
+
+					// Cube
+
+					var geometry = new THREE.BoxGeometry( 200, 200, 200 );
+
+					for ( var i = 0; i < geometry.faces.length; i += 1 ) {
+
+						var hex = Math.random() * 0xffffff;
+						geometry.faces[ i ].color.setHex( hex );
+
+					}
+
+					var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
+
+					cube = new THREE.Mesh( geometry, material );
+					cube.position.y = 150;
+					scene.add( cube );
+
+					// Plane
+
+					var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
+					geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+
+					var material = new THREE.MeshBasicMaterial( { color: 0xe0e0e0, overdraw: 0.5 } );
+
+
+					renderer = new THREE.WebGLRenderer();
+					renderer.setClearColor( 0xf0f0f0 );
+					renderer.setSize( window.innerWidth, window.innerHeight );
+
+					container.appendChild( renderer.domElement );
+
+				}
+
+
+				function animate() {
+
+					requestAnimationFrame( animate );
+					render();
+					
+
+				}
+
+				function render() {
+
+					cube.rotation.y += $scope.yRotationSpeed/100;
+					cube.rotation.x += $scope.xRotationSpeed/100;
+					renderer.render( scene, camera );
+
+				}
+			});
+		</script>
+
+	</body>
+</html>
