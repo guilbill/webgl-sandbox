@@ -15,8 +15,11 @@
 	</head>
 	<body ng-controller="cubeCtrl">
 
-		<input ng-model="xRotationSpeed" type="range" name="points" min="0" max="10"><br/>
-		<input ng-model="yRotationSpeed" type="range" min="0" max="10">
+		<input ng-model="xRotationSpeed" type="range" name="points" min="-10" max="10"><br/>
+		<input ng-model="yRotationSpeed" type="range" min="-10" max="10">
+		<input ng-model="targetRotation" type="range" min="0" max="100">
+		{{targetRotation}}
+		<button type="button" ng-click="turnLeft()">turnLeft</button>
 		<script src="three.min.js"></script>
 		<script src="angular.min.js"></script>
 
@@ -24,8 +27,10 @@
 			var cubeApp = angular.module('cubeApp', []);
 
 			cubeApp.controller('cubeCtrl', function ($scope) {
-				$scope.xRotationSpeed = 5;
-				$scope.yRotationSpeed = 5;
+				$scope.xRotationSpeed = 0;
+				$scope.yRotationSpeed = 0;
+
+				$scope.targetRotation = 0;
 				var container, stats;
 
 				var camera, scene, renderer;
@@ -98,6 +103,15 @@
 					renderer.render( scene, camera );
 
 				}
+
+				$scope.turnLeft = function(){
+					requestAnimationFrame( $scope.turnLeft );
+					if (cube.rotation.y != $scope.targetRotation){
+						cube.rotation.y +=0.05;
+					}
+					renderer.render( scene, camera );
+
+				};
 			});
 		</script>
 
