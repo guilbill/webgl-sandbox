@@ -17,8 +17,9 @@
 
 		<input ng-model="xRotationSpeed" type="range" name="points" min="-10" max="10"><br/>
 		<input ng-model="yRotationSpeed" type="range" min="-10" max="10">
-		<input ng-model="targetRotation" type="range" min="0" max="100">
-		{{targetRotation}}
+		<input ng-model="targetRotation" type="number" min="0" max="20">
+		{{targetRotation}}<br>
+		{{cube.rotation.y}}
 		<button type="button" ng-click="turnLeft()">turnLeft</button>
 		<script src="three.min.js"></script>
 		<script src="angular.min.js"></script>
@@ -32,10 +33,8 @@
 
 				$scope.targetRotation = 0;
 				var container, stats;
-
+				var rotationAnimation;
 				var camera, scene, renderer;
-
-				var cube;
 
 				var windowHalfX = window.innerWidth / 2;
 				var windowHalfY = window.innerHeight / 2;
@@ -67,9 +66,9 @@
 
 					var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
 
-					cube = new THREE.Mesh( geometry, material );
-					cube.position.y = 150;
-					scene.add( cube );
+					$scope.cube = new THREE.Mesh( geometry, material );
+					$scope.cube.position.y = 150;
+					scene.add( $scope.cube );
 
 					// Plane
 
@@ -98,20 +97,25 @@
 
 				function render() {
 
-					cube.rotation.y += $scope.yRotationSpeed/100;
-					cube.rotation.x += $scope.xRotationSpeed/100;
+					$scope.cube.rotation.y += $scope.yRotationSpeed/100;
+					$scope.cube.rotation.x += $scope.xRotationSpeed/100;
 					renderer.render( scene, camera );
 
 				}
 
 				$scope.turnLeft = function(){
-					requestAnimationFrame( $scope.turnLeft );
-					if (cube.rotation.y != $scope.targetRotation){
-						cube.rotation.y +=0.05;
-					}
-					renderer.render( scene, camera );
-
+					rotationAnimation = requestAnimationFrame( $scope.turnLeft );
+					renderRotation();
 				};
+
+				function renderRotation(){
+					$scope.cube.rotation.y += ( $scope.targetRotation - $scope.cube.rotation.y ) * 0.05;
+					renderer.render( scene, camera );
+					if (Math.round($scope.targetRotation - $scope.cube.rotation.y ) == 0) {
+						cancelAnimationFrame(rotationAnimation);
+						rotationAnimation=undefined;
+					}
+				}
 			});
 		</script>
 
