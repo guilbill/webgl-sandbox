@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js canvas - geometry - cube</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="three.min.js"></script>
+
+		<script>
+			var xRotationSpeed = 0;
+			var yRotationSpeed = 0;
+			var targetRotation = 0;
+			var keyCode;
+
+			var container, stats;
+			var rotationAnimationFrame;
+			var camera, scene, renderer;
+
+			var cameraRotationSpeed = .02;
+			var rotationKeyMappingCamera = {
+
+				// LEFT : pour aller de 90deg vers la GAUCHE
+				"37":{
+					axis1:"x",
+					axis2:"z",
+					direction:-1
+				},
+				// RIGHT : pour aller de 90deg vers la DROITE
+				"39":{
+					axis1:"x",
+					axis2:"z",
+					direction:1
+				},
+				// UP : pour aller de 90deg vers le HAUT
+				"38":{
+					axis1:"x",
+					axis2:"z",
+					direction:1
+				},
+				// DOWN : pour aller de 90deg vers le BAS
+				"40":{
+					axis1:"x",
+					axis2:"z",
+					direction:-1
+				}
+			};
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.y = 0;
+				camera.position.z = 500;
+
+				scene = new THREE.Scene();
+
+				// Cube
+
+				var geometry = new THREE.BoxGeometry( 200, 200, 200 );
+
+				for ( var i = 0; i < geometry.faces.length; i += 2 ) {
+
+					var hex = Math.random() * 0xffffff;
+					geometry.faces[ i ].color.setHex( hex );
+					geometry.faces[ i+1 ].color.setHex( hex );
+
+				}
+
+				var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
+
+				cube = new THREE.Mesh( geometry, material );
+				cube.position.y = 0;
+				scene.add( cube );
+
+				/* Plane */
+
+				var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
+				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+
+				var material = new THREE.MeshBasicMaterial( { color: 0xe0e0e0, overdraw: 0.5 } );
+				
+
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setClearColor( 0xf0f0f0 );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				container.appendChild( renderer.domElement );
+
+				document.addEventListener("keydown", onKeyDown);
+
+			}
+
+			function onKeyDown(event) {
+
+				// Touche appuyée est une des flèches
+				if (Object.keys(rotationKeyMappingCamera).indexOf(String(event.keyCode))){
+					// alert(event.keyCode);
+					keyCode=event.keyCode;
+					var rotation = rotationKeyMappingCamera[keyCode];
+					var currentAxis1 = rotation.axis1;
+					var currentAxis2 = rotation.axis2;
+					animate(rotation);
+				}
+			}
+
+			function animate(rotation) {
+
+				requestAnimationFrame( animate );
+				cameraRotation(rotation);
+				render();
+			
+			}
+
+			function cameraRotation(rotation) { 
+
+				switch(rotation) {
+			    	case "37" :
+				        camera.position.x = rotation.axis1 * Math.cos(cameraRotationSpeed) + rotation.axis2 * Math.sin(cameraRotationSpeed);
+				        camera.position.z = rotation.axis2 * Math.cos(cameraRotationSpeed) - rotation.axis1 * Math.sin(cameraRotationSpeed);
+			    	case "38" :
+				        camera.position.x = rotation.axis1 * Math.cos(cameraRotationSpeed) + rotation.axis2 * Math.sin(cameraRotationSpeed);
+				        camera.position.z = rotation.axis2 * Math.cos(cameraRotationSpeed) - rotation.axis1 * Math.sin(cameraRotationSpeed);
+			    	case "39" :
+				        camera.position.x = rotation.axis1 * Math.cos(cameraRotationSpeed) + rotation.axis2 * Math.sin(cameraRotationSpeed);
+				        camera.position.z = rotation.axis2 * Math.cos(cameraRotationSpeed) - rotation.axis1 * Math.sin(cameraRotationSpeed);
+			    	case "40" :
+				        camera.position.x = rotation.axis1 * Math.cos(cameraRotationSpeed) + rotation.axis2 * Math.sin(cameraRotationSpeed);
+				        camera.position.z = rotation.axis2 * Math.cos(cameraRotationSpeed) - rotation.axis1 * Math.sin(cameraRotationSpeed);
+				    default :
+				    	break;
+				}
+			    
+			    camera.lookAt(scene.position);
+			}
+
+			function render() {
+				renderer.render( scene, camera );
+			}
+		</script>
+
+	</body>
+</html>

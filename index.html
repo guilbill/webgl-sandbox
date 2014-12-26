@@ -79,9 +79,11 @@
 					cube.position.y = 0;
 					scene.add( cube );
 
-					// Les axes 
-					var axes = buildAxes(1000);
-					scene.add(axes);
+					// Les axes
+					var axesScene = buildAxes(1000);
+					var axesCube = buildAxes(1000);
+					scene.add(axesScene);
+					cube.add(axesCube);
 
 					// Plane
 
