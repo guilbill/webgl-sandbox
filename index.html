@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="cubeApp">
+<html lang="en">
 	<head>
 		<title>three.js canvas - geometry - cube</title>
 		<meta charset="utf-8">
@@ -13,23 +13,14 @@
 			}
 		</style>
 	</head>
-	<body ng-controller="cubeCtrl">
-
-		xRotationSpeed : <input ng-model="xRotationSpeed" type="range" name="points" min="-10" max="10">{{xRotationSpeed}}<br/>
-		yRotationSpeed<input ng-model="yRotationSpeed" type="range" min="-10" max="10">{{yRotationSpeed}}<br>
-		<button type="button" ng-click="turnLeft(targetRotation)">turnLeft</button>
-
+	<body>
 		<script src="three.min.js"></script>
-		<script src="angular.min.js"></script>
 
 		<script>
-			var cubeApp = angular.module('cubeApp', []);
+				var xRotationSpeed = 0;
+				var yRotationSpeed = 0;
 
-			cubeApp.controller('cubeCtrl', function ($scope) {
-				$scope.xRotationSpeed = 0;
-				$scope.yRotationSpeed = 0;
-
-				$scope.targetRotation = 0;
+				var targetRotation = 0;
 				
 				var keyCode;
 				var rotationAngle={"x":0,"y":0};
@@ -55,7 +46,7 @@
 
 				var container, stats;
 				var rotationAnimationFrame;
-				var camera, scene, renderer;
+				var camera, scene, renderer, cube;
 
 				init();
 				animate();
@@ -84,9 +75,9 @@
 
 					var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
 
-					$scope.cube = new THREE.Mesh( geometry, material );
-					$scope.cube.position.y = 0;
-					scene.add( $scope.cube );
+					cube = new THREE.Mesh( geometry, material );
+					cube.position.y = 0;
+					scene.add( cube );
 
 					// Les axes 
 					var axes = buildAxes(1000);
@@ -116,7 +107,7 @@
 						var rotation = rotationKeyMapping[keyCode];
 						var currentAxis = rotation.axis;
 						rotationAngle[currentAxis] += rotation.direction*90;
-						$scope.rotate();
+						rotate();
 					}
 				}
 				function animate() {
@@ -129,14 +120,14 @@
 
 				function render() {
 
-					$scope.cube.rotation.y += $scope.yRotationSpeed/100;
-					$scope.cube.rotation.x += $scope.xRotationSpeed/100;
+					cube.rotation.y += yRotationSpeed/100;
+					cube.rotation.x += xRotationSpeed/100;
 					renderer.render( scene, camera );
 
 				}
 
-				$scope.rotate = function(){
-					rotationAnimationFrame = requestAnimationFrame( $scope.rotate );
+				function rotate(){
+					rotationAnimationFrame = requestAnimationFrame( rotate );
 					renderRotation();
 				};
 
@@ -144,11 +135,11 @@
 					var rotation = rotationKeyMapping[keyCode];
 					var currentAxis = rotation.axis;
 					// Rotation du cube, on incrémente l'angle de l'axe courant de 2°C
-					$scope.cube.rotation[currentAxis] += 1*Math.PI/180*rotation.direction;
+					cube.rotation[currentAxis] += 1*Math.PI/180*rotation.direction;
 					renderer.render( scene, camera );
 
 					// Si on a atteint l'angle de rotation souhaité (rotationAngle), on arrête l'animation
-					var currentAngle = Math.round($scope.cube.rotation[currentAxis]*180/Math.PI);
+					var currentAngle = Math.round(cube.rotation[currentAxis]*180/Math.PI);
 					if ( currentAngle == rotationAngle[currentAxis]){
 						cancelAnimationFrame(rotationAnimationFrame);
 					}
@@ -187,7 +178,6 @@
 			        return axis;
 
 				}
-			});
 		</script>
 
 	</body>
